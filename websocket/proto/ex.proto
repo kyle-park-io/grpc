@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+// go config
+option go_package = "./websocket";
+
+// protobuf config
+package websocket;
+
+service WebSocket {
+  rpc serverToClientUnary(Name) returns (Result);
+
+  rpc serverToClientStream(stream Name) returns (stream Result);
+}
+
+message Name {
+  string id = 1;
+  string description = 2;
+}
+
+message Result {
+  string id = 1;
+  string result = 2;
+}
