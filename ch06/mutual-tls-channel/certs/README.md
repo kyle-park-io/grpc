@@ -11,16 +11,17 @@ e is 65537 (0x10001)
 ```
 
 1. Specifies which algorithm to use to create the key. OpenSSL supports creating keys with a different algorithm like
- RSA, DSA, and ECDSA. All types are practical for use in all scenarios. For example, for web server keys commonly uses RSA. In our case, we need to generate RSA type key.
+   RSA, DSA, and ECDSA. All types are practical for use in all scenarios. For example, for web server keys commonly uses RSA. In our case, we need to generate RSA type key.
 2. Specifies the name of the generated key. Can have any name with `.key` as extension.
 3. Specifies the size of the key. The default size for RSA keys is only 512 bits, which is not secure because an
- intruder can use brute force to recover your private key. So we use a 2048-bit RSA key which is considered to be secure.
+   intruder can use brute force to recover your private key. So we use a 2048-bit RSA key which is considered to be secure.
 
 Here you can also add a passphrase to the key. So you need the passphrase whenever you need to use the key. In this example, we are not going to add a passphrase to the key.
 
 So now we successfully created our private key(`server.key`) and we are going to use this in our gRPC server.
 
 # Generate CA and self-signed certificates
+
 Let’s create a Certificate Authority and self-signed certificate for our example. This is similar to what we have done to create the server key and self-signed certificate in the previous section. To generate RSA key using OpenSSL tool, execute the following command,
 
 ```shell script
@@ -43,25 +44,32 @@ $ openssl x509 -noout -text -in ca.crt
 
 We can check the validity period for 02 years and the issuer and subject should both be set to the value passed for “Common Name” because this is a root certificate and it is self-signed.
 
-The next step is to create a server private key and certificate. Unlike the previous section, we need to get the certificate signed by our new Certificate Authority(CA). 
+The next step is to create a server private key and certificate. Unlike the previous section, we need to get the certificate signed by our new Certificate Authority(CA).
 
 # Generate server certificate
+
 Once we have the server private key, we can proceed to create a Certificate Signing Request (CSR). This is a formal request asking a CA to sign a certificate, and it contains the public key of the entity requesting the certificate and some information about the entity. Like certificate creation, CSR creation process is also an interactive process during which you’ll be providing the elements of the certificate distinguished name.
 
 Execute the following command to create a certificate signing request.
+
 ```shell script
 $ openssl req -new -sha256 -key server.key -out server.csr
 ```
+
 After a CSR is generated, we can sign the request and generate the certificate using our own CA certificate. Normally, the CA and the certificate requester are two different companies who don’t want to share their private keys. That’s why we need this intermediate step for certificate creation.
 
 Let’s execute the following command to use our root CA to sign the CSR and create server certificate. You’ll be prompted to enter the root CA’s password.
+
 ```shell script
 $ openssl x509 -req -days 365 -sha256 -in server.csr -CA ca.crt -CAkey ca.key -set_serial 1 -out server.crt
 ```
+
 Now we have created server key(server.key) and server certificate(server.crt). We can use them to enable mutual TLS in server side later. Let’s create client key and certificate,
 
 # Generate client key and certificate
+
 Generating the client certificate is very similar to creating the server certificate. We need to execute the following commands to create a private key, create a certificate signing request and create a certificate for client application.
+
 ```shell script
 $ openssl genrsa -out client.key 2048
 $ openssl req -new -key client.key -out client.csr
@@ -69,7 +77,8 @@ $ openssl x509 -req -days 365 -sha256 -in client.csr -CA ca.crt -CAkey ca.key -s
 ```
 
 # Convert server/client keys to pem format
-In order to secure java application, we need to provide key store(.pem file). We can easily convert the server and client keys using following command 
+
+In order to secure java application, we need to provide key store(.pem file). We can easily convert the server and client keys using following command
 
 ```shell script
 $ openssl pkcs8 -topk8 -inform pem -in server.key -outform pem -nocrypt -out server.pem
