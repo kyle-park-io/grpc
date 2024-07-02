@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "google-protobuf": "^3.21.2",
+    "protoc-gen-js": "^3.21.2",
+    "protoc-gen-ts": "^0.8.7"
+  }
+}

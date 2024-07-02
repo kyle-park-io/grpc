@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+// import "google/protobuf/duration.proto";
+
+// protobuf config
+package kyle_chat;
+
+// go config
+option go_package = "./chat";
+
+message TestMsg { uint64 id = 1; }
+
+message ChatMsg {
+  uint64 id = 1;
+  string user_id = 2;
+  string text = 3;
+  google.protobuf.Timestamp event_time = 4;
+}
+
+message GetTestMsg { uint64 id = 1; }
+
+message GetChatMsg {
+  uint64 id = 1;
+  string user_id = 2;
+}
+
+service Chat {
+  rpc SendMsgTest(TestMsg) returns (google.protobuf.StringValue);
+  rpc SendMsg(ChatMsg) returns (google.protobuf.StringValue);
+
+  rpc GetMsgTest(GetTestMsg) returns (TestMsg);
+  rpc GetMsg(GetChatMsg) returns (ChatMsg);
+}
