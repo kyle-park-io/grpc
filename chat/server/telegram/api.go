@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	pb "server/chat"
 )
 
 const (
@@ -15,20 +17,26 @@ const (
 )
 
 type Message struct {
-	ChatID                string `json:"chat_id"`
-	Text                  string `json:"text"`
+	ChatID string `json:"chat_id"`
+	Text   string `json:"text"`
+	// parseMode : default, Markdown, HTML
 	ParseMode             string `json:"parse_mode,omitempty"`
 	DisableWebPagePreview bool   `json:"disable_web_page_preview"`
 	DisableNotification   bool   `json:"disable_notification"`
 	ReplyToMessageID      *int32 `json:"reply_to_message_id,omitempty"`
 }
 
-func SendMessage() error {
-	text := fmt.Sprintf("hello world")
+func SendMessage(in *pb.ChatMsg) error {
+	// text
+	text, err := json.Marshal(in)
+	if err != nil {
+		return fmt.Errorf("failed to marshal JSON: %v", err)
+	}
 
 	message := Message{}
 	message.ChatID = chat_id
-	message.Text = text
+	message.Text = string(text)
+	// message.ParseMode = "Markdown"
 	// message.ParseMode = "HTML"
 	message.DisableWebPagePreview = false
 	message.DisableNotification = false

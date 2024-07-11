@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	"strconv"
 
 	pb "server/chat"
+	"server/fieldconcat"
 	"server/telegram"
 
 	"google.golang.org/grpc"
@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	port = ":50051"
+	port    = ":50051"
+	address = "localhost:50051"
 )
 
 type server struct {
@@ -44,12 +45,16 @@ func (s *server) SendMsg(ctx context.Context, in *pb.ChatMsg) (*wrapperspb.Strin
 	if s.msgMap == nil {
 		s.msgMap = make(map[string]*pb.ChatMsg)
 	}
-	s.msgMap[strconv.FormatUint(in.Id, 10)] = in
+
+	setGetChatStruct := &pb.GetChatMsg{Id: in.Id, UserId: in.UserId, EventTime: in.EventTime}
+	key := fieldconcat.ConcatenateFieldsByReflect(setGetChatStruct)
+	s.msgMap[key] = in
 	log.Printf("msgMap: %v", s.msgMap)
 
-	err := telegram.SendMessage()
+	err := telegram.SendMessage(in)
 	if err != nil {
 		log.Print(err)
+		return nil, err
 	}
 
 	return wrapperspb.String("ok"), nil
@@ -59,31 +64,28 @@ func (s *server) SendMsg(ctx context.Context, in *pb.ChatMsg) (*wrapperspb.Strin
 func (s *server) GetMsgTest(ctx context.Context, in *pb.GetTestMsg) (*pb.TestMsg, error) {
 	log.Printf("try go get test msg! : %v", in)
 
-	fmt.Println(s.testMsgMap["1"])
-
 	msg, exists := s.testMsgMap[strconv.FormatUint(in.Id, 10)]
-	fmt.Println(msg)
-	fmt.Println(exists)
 	if exists && msg != nil {
 		log.Printf("msg %v - Retrieved.", msg)
 		return msg, status.New(codes.OK, "").Err()
 	}
 
-	return nil, status.Errorf(codes.NotFound, "msg does not exist.", in)
+	return nil, status.Errorf(codes.NotFound, "msg does not exist: %v", in)
 }
 
 func (s *server) GetMsg(ctx context.Context, in *pb.GetChatMsg) (*pb.ChatMsg, error) {
 	log.Printf("try go get msg! : %v", in)
 
-	msg, exists := s.msgMap[strconv.FormatUint(in.Id, 10)]
+	key := fieldconcat.ConcatenateFieldsByReflect(in)
+	msg, exists := s.msgMap[key]
 	if exists && msg != nil {
 		log.Printf("msg %v - Retrieved.", msg)
 		return msg, status.New(codes.OK, "").Err()
 	}
-	return nil, status.Errorf(codes.NotFound, "msg does not exist.", in)
+	return nil, status.Errorf(codes.NotFound, "msg does not exist: %v", in)
 }
 
-func main() {
+func runServer() {
 	// tcp open
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
@@ -98,4 +100,8 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+func main() {
+	runServer()
 }
