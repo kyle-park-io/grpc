@@ -339,6 +339,7 @@ export namespace kyle_chat {
         | {
             id?: number;
             user_id?: string;
+            event_time?: dependency_2.google.protobuf.Timestamp;
           },
     ) {
       super();
@@ -357,6 +358,9 @@ export namespace kyle_chat {
         if ('user_id' in data && data.user_id != undefined) {
           this.user_id = data.user_id;
         }
+        if ('event_time' in data && data.event_time != undefined) {
+          this.event_time = data.event_time;
+        }
       }
     }
     get id() {
@@ -371,7 +375,26 @@ export namespace kyle_chat {
     set user_id(value: string) {
       pb_1.Message.setField(this, 2, value);
     }
-    static fromObject(data: { id?: number; user_id?: string }): GetChatMsg {
+    get event_time() {
+      return pb_1.Message.getWrapperField(
+        this,
+        dependency_2.google.protobuf.Timestamp,
+        4,
+      ) as dependency_2.google.protobuf.Timestamp;
+    }
+    set event_time(value: dependency_2.google.protobuf.Timestamp) {
+      pb_1.Message.setWrapperField(this, 4, value);
+    }
+    get has_event_time() {
+      return pb_1.Message.getField(this, 4) != null;
+    }
+    static fromObject(data: {
+      id?: number;
+      user_id?: string;
+      event_time?: ReturnType<
+        typeof dependency_2.google.protobuf.Timestamp.prototype.toObject
+      >;
+    }): GetChatMsg {
       const message = new GetChatMsg({});
       if (data.id != null) {
         message.id = data.id;
@@ -379,18 +402,29 @@ export namespace kyle_chat {
       if (data.user_id != null) {
         message.user_id = data.user_id;
       }
+      if (data.event_time != null) {
+        message.event_time = dependency_2.google.protobuf.Timestamp.fromObject(
+          data.event_time,
+        );
+      }
       return message;
     }
     toObject() {
       const data: {
         id?: number;
         user_id?: string;
+        event_time?: ReturnType<
+          typeof dependency_2.google.protobuf.Timestamp.prototype.toObject
+        >;
       } = {};
       if (this.id != null) {
         data.id = this.id;
       }
       if (this.user_id != null) {
         data.user_id = this.user_id;
+      }
+      if (this.event_time != null) {
+        data.event_time = this.event_time.toObject();
       }
       return data;
     }
@@ -400,6 +434,10 @@ export namespace kyle_chat {
       const writer = w || new pb_1.BinaryWriter();
       if (this.id != 0) writer.writeUint64(1, this.id);
       if (this.user_id.length) writer.writeString(2, this.user_id);
+      if (this.has_event_time)
+        writer.writeMessage(4, this.event_time, () =>
+          this.event_time.serialize(writer),
+        );
       if (!w) return writer.getResultBuffer();
     }
     static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetChatMsg {
@@ -416,6 +454,14 @@ export namespace kyle_chat {
             break;
           case 2:
             message.user_id = reader.readString();
+            break;
+          case 4:
+            reader.readMessage(
+              message.event_time,
+              () =>
+                (message.event_time =
+                  dependency_2.google.protobuf.Timestamp.deserialize(reader)),
+            );
             break;
           default:
             reader.skipField();

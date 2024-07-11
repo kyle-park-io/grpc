@@ -99,6 +99,11 @@ export class GetChatMsg extends jspb.Message {
   getUserId(): string;
   setUserId(value: string): GetChatMsg;
 
+  getEventTime(): google_protobuf_timestamp_pb.Timestamp | undefined;
+  setEventTime(value?: google_protobuf_timestamp_pb.Timestamp): GetChatMsg;
+  hasEventTime(): boolean;
+  clearEventTime(): GetChatMsg;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetChatMsg.AsObject;
   static toObject(
@@ -120,5 +125,6 @@ export namespace GetChatMsg {
   export type AsObject = {
     id: number;
     userId: string;
+    eventTime?: google_protobuf_timestamp_pb.Timestamp.AsObject;
   };
 }

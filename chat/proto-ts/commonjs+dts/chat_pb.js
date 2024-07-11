@@ -615,6 +615,9 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
       obj = {
         id: jspb.Message.getFieldWithDefault(msg, 1, 0),
         userId: jspb.Message.getFieldWithDefault(msg, 2, ''),
+        eventTime:
+          (f = msg.getEventTime()) &&
+          google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
       };
 
     if (includeInstance) {
@@ -660,6 +663,14 @@ proto.kyle_chat.GetChatMsg.deserializeBinaryFromReader = function (
         var value = /** @type {string} */ (reader.readString());
         msg.setUserId(value);
         break;
+      case 4:
+        var value = new google_protobuf_timestamp_pb.Timestamp();
+        reader.readMessage(
+          value,
+          google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader,
+        );
+        msg.setEventTime(value);
+        break;
       default:
         reader.skipField();
         break;
@@ -698,6 +709,14 @@ proto.kyle_chat.GetChatMsg.serializeBinaryToWriter = function (
   if (f.length > 0) {
     writer.writeString(2, f);
   }
+  f = message.getEventTime();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter,
+    );
+  }
 };
 
 /**
@@ -730,6 +749,44 @@ proto.kyle_chat.GetChatMsg.prototype.getUserId = function () {
  */
 proto.kyle_chat.GetChatMsg.prototype.setUserId = function (value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+/**
+ * optional google.protobuf.Timestamp event_time = 4;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.kyle_chat.GetChatMsg.prototype.getEventTime = function () {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(
+      this,
+      google_protobuf_timestamp_pb.Timestamp,
+      4,
+    )
+  );
+};
+
+/**
+ * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @return {!proto.kyle_chat.GetChatMsg} returns this
+ */
+proto.kyle_chat.GetChatMsg.prototype.setEventTime = function (value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.kyle_chat.GetChatMsg} returns this
+ */
+proto.kyle_chat.GetChatMsg.prototype.clearEventTime = function () {
+  return this.setEventTime(undefined);
+};
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.kyle_chat.GetChatMsg.prototype.hasEventTime = function () {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 goog.object.extend(exports, proto.kyle_chat);

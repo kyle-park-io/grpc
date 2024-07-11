@@ -24,6 +24,7 @@ message GetTestMsg { uint64 id = 1; }
 message GetChatMsg {
   uint64 id = 1;
   string user_id = 2;
+  google.protobuf.Timestamp event_time = 4;
 }
 
 service Chat {
