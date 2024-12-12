@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+// import "google/protobuf/duration.proto";
+
+// protobuf config
+package anonymouschat;
+
+// go config
+option go_package = "./chat";
+
+message ConnectEvent {
+  string user_id = 1;
+  bool is_connected = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+service ChatService {
+  rpc Connect(ConnectEvent) returns (ConnectEvent);
+  // rpc Connect(stream ConnectEvent) returns (stream ConnectEvent);
+}
