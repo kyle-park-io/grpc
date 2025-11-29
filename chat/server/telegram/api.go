@@ -12,13 +12,15 @@ import (
 )
 
 const (
-	token   = "XXX"
-	chat_id = "XXX"
+	token    = "XXX"
+	chat_id  = "XXX"
+	topic_id = 0 // integer
 )
 
 type Message struct {
-	ChatID string `json:"chat_id"`
-	Text   string `json:"text"`
+	ChatID          string `json:"chat_id"`
+	MessageThreadID int    `json:"message_thread_id,omitempty"`
+	Text            string `json:"text"`
 	// parseMode : default, Markdown, HTML
 	ParseMode             string `json:"parse_mode,omitempty"`
 	DisableWebPagePreview bool   `json:"disable_web_page_preview"`
@@ -35,6 +37,7 @@ func SendMessage(in *pb.ChatMsg) error {
 
 	message := Message{}
 	message.ChatID = chat_id
+	message.MessageThreadID = topic_id
 	message.Text = string(text)
 	// message.ParseMode = "Markdown"
 	// message.ParseMode = "HTML"
